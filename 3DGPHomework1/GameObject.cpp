@@ -111,19 +111,6 @@ void CGameObject::setOOBB() {
 
 }
 
-GroundObject::GroundObject()
-{
-	m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-}
-GroundObject::~GroundObject()
-{
-}
-
-void GroundObject::Animate(float fTimeElapsed)
-{
-	
-}
-
 
 void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice,
 	ID3D12GraphicsCommandList* pd3dCommandList)
@@ -203,5 +190,18 @@ void CGameObject::Rotate(float fPitch, float fYaw, float fRoll)
 	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch),
 		XMConvertToRadians(fYaw), XMConvertToRadians(fRoll));
 	m_xmf4x4World = Matrix4x4::Multiply(mtxRotate, m_xmf4x4World);
+}
+
+GroundObject::GroundObject()
+{
+	m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+}
+GroundObject::~GroundObject()
+{
+}
+
+void GroundObject::Animate(float fTimeElapsed)
+{
+
 }
 

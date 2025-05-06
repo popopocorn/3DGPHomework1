@@ -31,15 +31,19 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pShaders[0].m_ppObjects.push_back(Plane);
 	
 
-	CCubeMeshDiffused* SmallCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
-		10.0f, 10.0f, 10);
-	CGameObject* Obstacle = new GroundObject();
-	Obstacle->SetMesh(SmallCubeMesh);
-	Obstacle->SetPosition(0, 0, 0);
-	Obstacle->debugName = 'o';
-	m_pShaders[0].m_ppObjects.push_back(Obstacle);
-
+	CMesh* SmallCubeMesh = new EnemyMesh(pd3dDevice, pd3dCommandList);
 	
+	CGameObject* e1 = new Enemy();
+	e1->SetMesh(SmallCubeMesh);
+	e1->SetPosition(0, 0, 0);
+	e1->debugName = '1';
+	m_pShaders[0].m_ppObjects.push_back(e1);
+
+	CGameObject* e2 = new Enemy();
+	e2->SetMesh(SmallCubeMesh);
+	e2->SetPosition(20, 0, 0);
+	e2->debugName = '2';
+	m_pShaders[0].m_ppObjects.push_back(e2);
 }
 
 

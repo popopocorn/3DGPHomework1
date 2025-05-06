@@ -87,6 +87,16 @@ public:
 	virtual ~CCubeMeshDiffused();
 };
 
+class EnemyMesh : public CMesh
+{
+public:
+	//직육면체의 가로, 세로, 깊이의 길이를 지정하여 직육면체 메쉬를 생성한다.
+	EnemyMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, float fWidth = 0.5f, float fHeight = 0.5f, float fDepth = 0.5f);
+	virtual ~EnemyMesh();
+};
+
+
 class CTankMeshDiffused : public CMesh
 {
 public:
