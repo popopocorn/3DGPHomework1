@@ -151,6 +151,9 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 			float fHitDistance = FLT_MAX;
 			
 			nIntersected = (m_pShaders[i].m_ppObjects[j])->PickObjectByRayIntersection(xmvPickPosition, xmmtxView, fHitDistance);
+			/*char buffer[64];
+			sprintf(buffer, "dist: %f", fNearestHitDistance);
+			OutputDebugStringA(buffer);*/
 			if ((nIntersected > 0) && (fHitDistance < fNearestHitDistance))
 			{
 				fNearestHitDistance = fHitDistance;
@@ -170,7 +173,7 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 		OutputDebugStringW(debugStr.c_str());
 	}
 	else {
-		OutputDebugString(L"None");
+		OutputDebugString(L"None\n");
 	}
 
 

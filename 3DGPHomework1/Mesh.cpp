@@ -103,9 +103,13 @@ void CMesh::setOOBB() {
 	//debugStr += L"Center - Y: " + std::to_wstring(m_xmOOBB.Center.y) + L"\n";
 	//debugStr += L"Center - Z: " + std::to_wstring(m_xmOOBB.Center.z) + L"\n";
 
+	//debugStr += L"Extents - X: " + std::to_wstring(m_xmOOBB.Extents.x) + L"\n";
+	//debugStr += L"Extents - Y: " + std::to_wstring(m_xmOOBB.Extents.y) + L"\n";
+	//debugStr += L"Extents - Z: " + std::to_wstring(m_xmOOBB.Extents.z) + L"\n";
+
 	//debugStr += L"Orient - X: " + std::to_wstring(m_xmOOBB.Orientation.x) + L"\n";
-	//debugStr += L"Center - Y: " + std::to_wstring(m_xmOOBB.Orientation.y) + L"\n";
-	//debugStr += L"Center - Z: " + std::to_wstring(m_xmOOBB.Orientation.z) + L"\n";
+	//debugStr += L"Orient - Y: " + std::to_wstring(m_xmOOBB.Orientation.y) + L"\n";
+	//debugStr += L"Orient - Z: " + std::to_wstring(m_xmOOBB.Orientation.z) + L"\n";
 	//	
 	//// 디버그 뷰어에 출력
 	//OutputDebugStringW(debugStr.c_str());

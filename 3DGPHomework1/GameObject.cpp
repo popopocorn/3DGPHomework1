@@ -93,14 +93,14 @@ void CGameObject::GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmm
 	XMFLOAT3 dir;
 	XMStoreFloat3(&dir, xmvPickRayDirection);
 
-	wchar_t buffer[512];
-	swprintf_s(buffer, 512,
-		L"[Ray Origin] x=%.3f, y=%.3f, z=%.3f\n"
-		L"[Ray Direction] x=%.3f, y=%.3f, z=%.3f\n",
-		ori.x, ori.y, ori.z,
-		dir.x, dir.y, dir.z);
+	//wchar_t buffer[512];
+	//swprintf_s(buffer, 512,
+	//	L"[Ray Origin] x=%.3f, y=%.3f, z=%.3f\n"
+	//	L"[Ray Direction] x=%.3f, y=%.3f, z=%.3f\n",
+	//	ori.x, ori.y, ori.z,
+	//	dir.x, dir.y, dir.z);
 
-	OutputDebugStringW(buffer);
+	//OutputDebugStringW(buffer);
 
 	
 }
