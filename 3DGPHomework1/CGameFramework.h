@@ -9,8 +9,6 @@ class CGameFramework
 public:
 	CGameFramework();
 	~CGameFramework();
-
-	void ChangeSwapChainState();
 	void MoveToNextFrame();
 
 	bool OnCreate(HINSTANCE hInstance, HWND hMainWnd);

@@ -96,6 +96,7 @@ public:
 	float						m_fExplosionRotation = 720.0f;
 
 	virtual void Animate(float fElapsedTime);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, int idx);
 	virtual void Render(HDC hDCFrameBuffer, CCamera* pCamera);
 
 public:
@@ -107,6 +108,29 @@ public:
 
 class Obstacle : public CGameObject {
 	Obstacle(XMFLOAT3);
+};
+
+class CBulletObject : public CGameObject
+{
+public:
+	CBulletObject(float fEffectiveRange);
+	virtual ~CBulletObject();
+
+public:
+	virtual void Animate(float fElapsedTime);
+
+	float						m_fBulletEffectiveRange = 50.0f;
+	float						m_fMovingDistance = 0.0f;
+	float						m_fRotationAngle = 0.0f;
+	XMFLOAT3					m_xmf3FirePosition = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
+	float						m_fElapsedTimeAfterFire = 0.0f;
+	float						m_fLockingDelayTime = 0.3f;
+	float						m_fLockingTime = 4.0f;
+	CGameObject* m_pLockedObject = NULL;
+
+	void SetFirePosition(XMFLOAT3 xmf3FirePosition);
+	void Reset();
 };
 
 class Enemy : public CGameObject {
