@@ -122,7 +122,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     ::UpdateWindow(hmainWnd);
 
 #ifdef _WITH_SWAPCHAIN_FULLSCREEN_STATE
-    gGameFramework.ChangeSwapChainState();
+    //gGameFramework.ChangeSwapChainState();
 #endif // _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 

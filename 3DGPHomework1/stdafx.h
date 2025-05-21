@@ -47,7 +47,7 @@ using Microsoft::WRL::ComPtr;
 #define FRAME_BUFFER_HEIGHT 600
 #define RANDOM_COLOR XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
 #define EXPLOSION_DEBRISES		240
-//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
+#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE
