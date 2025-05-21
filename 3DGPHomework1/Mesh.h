@@ -105,4 +105,4 @@ public:
 	virtual ~CTankMeshDiffused();
 };
 
-void ReadModel(const char*, std::vector<CDiffusedVertex>&, XMFLOAT3);
+void ReadModel(const char*, std::vector<CDiffusedVertex>&, XMFLOAT3, XMFLOAT4);

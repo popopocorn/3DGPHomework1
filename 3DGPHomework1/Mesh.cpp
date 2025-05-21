@@ -151,7 +151,7 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 		pd3dCommandList)
 {
 	//직육면체는 꼭지점(정점)이 8개이다.
-	ReadModel("cube1.obj", vertices, XMFLOAT3(fWidth, fHeight, fDepth));
+	ReadModel("cube1.obj", vertices, XMFLOAT3(fWidth, fHeight, fDepth), XMFLOAT4());
 	m_nVertices = vertices.size();
 	m_nStride = sizeof(CDiffusedVertex);
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -173,7 +173,7 @@ EnemyMesh::EnemyMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		pd3dCommandList)
 {
 	//직육면체는 꼭지점(정점)이 8개이다.
-	ReadModel("Enemy.obj", vertices, XMFLOAT3(fWidth, fHeight, fDepth));
+	ReadModel("Enemy.obj", vertices, XMFLOAT3(fWidth, fHeight, fDepth), XMFLOAT4(1.0, 0.0, 0.0, 1.0));
 	m_nVertices = vertices.size();
 	m_nStride = sizeof(CDiffusedVertex);
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -195,7 +195,7 @@ CTankMeshDiffused::CTankMeshDiffused(ID3D12Device* pd3dDevice,
 	XMFLOAT4 xmf4Color) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	
-	ReadModel("Puma_Tank.obj", vertices, XMFLOAT3(10, 10, 10));
+	ReadModel("PUMA_Tank.obj", vertices, XMFLOAT3(10, 10, 10), XMFLOAT4(0.0, 1.0, 0.0, 1.0));
 	m_nVertices = vertices.size();
 	m_nStride = sizeof(CDiffusedVertex);
 	m_nOffset = 0;
@@ -213,7 +213,7 @@ CTankMeshDiffused::~CTankMeshDiffused()
 {
 }
 
-void ReadModel(const char* modelName, std::vector<CDiffusedVertex>& vertexArray, XMFLOAT3 scale) {
+void ReadModel(const char* modelName, std::vector<CDiffusedVertex>& vertexArray, XMFLOAT3 scale, XMFLOAT4 color) {
 
 	std::ifstream in{ modelName };
 	std::vector<CDiffusedVertex> tempVertex;
@@ -228,7 +228,7 @@ void ReadModel(const char* modelName, std::vector<CDiffusedVertex>& vertexArray,
 			float x, y, z;
 			in >> x >> y >> z;
 			tempVertex.push_back(CDiffusedVertex(XMFLOAT3(x * scale.x - 6, y * scale.y,z * scale.z),
-				RANDOM_COLOR));
+				Vector4::Add(color, RANDOM_COLOR)));
 
 		}
 		else if (line == "vn") {

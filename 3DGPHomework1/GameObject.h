@@ -97,7 +97,7 @@ public:
 
 	virtual void Animate(float fElapsedTime);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, int idx);
-	virtual void Render(HDC hDCFrameBuffer, CCamera* pCamera);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 public:
 	static CMesh* m_pExplosionMesh;
