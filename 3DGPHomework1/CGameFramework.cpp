@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "CGameFramework.h"
 
+
+float ScreenWidth = 0.0f;
+float ScreenHeight = 0.0f;
+float FullScreenWidth = 0.0f;
+float FullScreenHeight = 0.0f;
+
+
 CGameFramework::CGameFramework()
 {
 	OutputDebugString(L"Call debug");
@@ -196,7 +203,15 @@ void CGameFramework::CreateDirect3DDevice() {
 
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 
-
+	ComPtr<IDXGIOutput> tempOutput;
+	DXGI_OUTPUT_DESC tempDesc;
+	m_pdxgiFactory->EnumAdapters1(0, &pd3dAdapter);
+	pd3dAdapter->EnumOutputs(0, tempOutput.GetAddressOf());
+	tempOutput->GetDesc(&tempDesc);
+	ScreenWidth = tempDesc.DesktopCoordinates.right - tempDesc.DesktopCoordinates.left;
+	ScreenHeight = tempDesc.DesktopCoordinates.bottom - tempDesc.DesktopCoordinates.top;
+	FullScreenWidth = ScreenWidth;
+	FullScreenHeight = ScreenHeight;
 	if (pd3dAdapter) pd3dAdapter->Release();
 
 
@@ -229,8 +244,8 @@ void CGameFramework::CreateDepthStencilView() {
 	D3D12_RESOURCE_DESC d3dResourcDesc;
 	d3dResourcDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	d3dResourcDesc.Alignment = 0;
-	d3dResourcDesc.Width = m_nWndClientWidth;
-	d3dResourcDesc.Height = m_nWndClientHeight;
+	d3dResourcDesc.Width = ScreenWidth;
+	d3dResourcDesc.Height = ScreenHeight;
 	d3dResourcDesc.DepthOrArraySize = 1;
 	d3dResourcDesc.MipLevels = 1;
 	d3dResourcDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -469,8 +484,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 	{
 	case WM_SIZE:
 	{
-		m_nWndClientWidth = LOWORD(lParam);
-		m_nWndClientHeight = HIWORD(lParam);
+		ScreenWidth = LOWORD(lParam);
+		ScreenHeight = HIWORD(lParam);
 		break;
 
 	}
@@ -500,13 +515,24 @@ void CGameFramework::ChangeSwapChainState() {
 
 	DXGI_MODE_DESC dxgiTargetParameters;
 	if (!bFullScreenState) {
-		IDXGIFactory::EnumAdapters;
-		dxgiTargetParameters.Width = m_nWndClientWidth;
-		dxgiTargetParameters.Height = m_nWndClientHeight;
+		dxgiTargetParameters.Width = FullScreenWidth;
+		dxgiTargetParameters.Height = FullScreenHeight;
+		ScreenWidth = FullScreenWidth;
+		ScreenHeight = FullScreenHeight;
+
+		
+		m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
+		m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
 	}
 	else {
 		dxgiTargetParameters.Width = m_nWndClientWidth;
 		dxgiTargetParameters.Height = m_nWndClientHeight;
+		ScreenWidth = m_nWndClientWidth;
+		ScreenHeight = m_nWndClientHeight;
+
+		
+		m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
+		m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
 	}
 		
 	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -523,10 +549,12 @@ void CGameFramework::ChangeSwapChainState() {
 
 	DXGI_SWAP_CHAIN_DESC dxgiSwapChainDesc;
 	m_pdxgiSwapChain->GetDesc(&dxgiSwapChainDesc);
-	m_pdxgiSwapChain->ResizeBuffers(m_nSwapChainBuffers, m_nWndClientWidth,
-		m_nWndClientHeight, dxgiSwapChainDesc.BufferDesc.Format, dxgiSwapChainDesc.Flags);
+	m_pdxgiSwapChain->ResizeBuffers(m_nSwapChainBuffers, ScreenWidth,
+		ScreenHeight, dxgiSwapChainDesc.BufferDesc.Format, dxgiSwapChainDesc.Flags);
 	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
-
+	m_pd3dDepthStencilBuffer->Release();
+	m_pd3dDepthStencilBuffer = nullptr;
+	CreateDepthStencilView();
 	CreateRenderTargetViews();
 }
 

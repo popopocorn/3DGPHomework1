@@ -18,6 +18,7 @@
 #include<vector>
 
 
+
 #include<string>
 #include<wrl.h>
 #include<shellapi.h>
@@ -45,6 +46,12 @@ using Microsoft::WRL::ComPtr;
 
 #define FRAME_BUFFER_WIDTH 800
 #define FRAME_BUFFER_HEIGHT 600
+extern float ScreenWidth;
+extern float ScreenHeight;
+extern float FullScreenWidth;
+extern float FullScreenHeight;
+
+
 #define RANDOM_COLOR XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
 #define EXPLOSION_DEBRISES		240
 #define _WITH_SWAPCHAIN_FULLSCREEN_STATE
