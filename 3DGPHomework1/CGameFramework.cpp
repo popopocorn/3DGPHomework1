@@ -499,9 +499,18 @@ void CGameFramework::ChangeSwapChainState() {
 	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
 
 	DXGI_MODE_DESC dxgiTargetParameters;
+	if (!bFullScreenState) {
+		IDXGIFactory::EnumAdapters;
+		dxgiTargetParameters.Width = m_nWndClientWidth;
+		dxgiTargetParameters.Height = m_nWndClientHeight;
+	}
+	else {
+		dxgiTargetParameters.Width = m_nWndClientWidth;
+		dxgiTargetParameters.Height = m_nWndClientHeight;
+	}
+		
 	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	dxgiTargetParameters.Width = m_nWndClientWidth;
-	dxgiTargetParameters.Height = m_nWndClientHeight;
+	
 	dxgiTargetParameters.RefreshRate.Numerator = 60;
 	dxgiTargetParameters.RefreshRate.Denominator = 1;
 	dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
