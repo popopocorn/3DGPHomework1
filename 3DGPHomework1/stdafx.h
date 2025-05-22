@@ -15,7 +15,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-#include<vector>
+#include <vector>
 
 
 
@@ -44,8 +44,8 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#define FRAME_BUFFER_WIDTH 800
-#define FRAME_BUFFER_HEIGHT 600
+#define FRAME_BUFFER_WIDTH 1280
+#define FRAME_BUFFER_HEIGHT 720
 extern float ScreenWidth;
 extern float ScreenHeight;
 extern float FullScreenWidth;
