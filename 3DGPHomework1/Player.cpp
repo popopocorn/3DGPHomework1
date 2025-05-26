@@ -330,6 +330,37 @@ void CTankPlayer::OnPrepareRender()
 	CPlayer::OnPrepareRender();
 }
 
+void CTankPlayer::fireBullet(CGameObject* pickedObj)
+{
+	CBulletObject* pBulletObject = NULL;
+	for (int i = 0; i < 50; i++)
+	{
+		if (!m_ppBullets[i]->m_bActive)
+		{
+			pBulletObject = m_ppBullets[i];
+			break;
+		}
+	}
+
+	if (pBulletObject)
+	{
+		XMFLOAT3 xmf3Position = GetPosition();
+		XMFLOAT3 xmf3Direction = GetUp();
+		XMFLOAT3 xmf3FirePosition = Vector3::Add(xmf3Position, Vector3::ScalarProduct(xmf3Direction, 6.0f, false));
+
+		pBulletObject->setworld4x4(m_xmf4x4World);
+
+		pBulletObject->SetFirePosition(xmf3FirePosition);
+		pBulletObject->SetMovingDirection(xmf3Direction);
+		pBulletObject->SetActive(true);
+
+		if (pickedObj)
+		{
+			pBulletObject->m_pLockedObject = pickedObj;
+		}
+	}
+}
+
 CCamera* CTankPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 {
 	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
