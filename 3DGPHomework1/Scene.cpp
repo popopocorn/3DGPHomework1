@@ -98,11 +98,13 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 	D3D12_ROOT_PARAMETER pd3dRootParameters[2];
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	//4x4행렬 하나 넘길 거니까 32비트 변수 16개
 	pd3dRootParameters[0].Constants.Num32BitValues = 16;
 	pd3dRootParameters[0].Constants.ShaderRegister = 0;
 	pd3dRootParameters[0].Constants.RegisterSpace = 0;
 	pd3dRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	pd3dRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	//4x4행렬 두 개 넘길 거니까 32비트 변수 32개
 	pd3dRootParameters[1].Constants.Num32BitValues = 32;
 	pd3dRootParameters[1].Constants.ShaderRegister = 1;
 	pd3dRootParameters[1].Constants.RegisterSpace = 0;
