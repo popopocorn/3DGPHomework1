@@ -279,7 +279,7 @@ void CGameFramework::CreateDepthStencilView() {
 void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_pScene = new CScene(this);
+	m_pScene = new Title(this);
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pCamera = m_pScene->m_pPlayer->GetCamera();
@@ -509,4 +509,5 @@ void CGameFramework::ChangeScene(CScene* next) {
 	m_pScene->ReleaseObjects();
 	delete m_pScene;
 	m_pScene = next;
+	m_pScene->BuildObjects();
 }
