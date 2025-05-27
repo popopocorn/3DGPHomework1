@@ -38,8 +38,8 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	void ChangeScene(CScene* next);
-
-	CPlayer* m_pPlayer = NULL;
+	
+	
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다.
 	POINT m_ptOldCursorPos;
 
@@ -86,5 +86,7 @@ private:
 	_TCHAR m_pszFrameRate[50];
 
 	CScene* m_pScene;
+public:
+	CGameTimer GetTimer() {	return m_GameTimer; }
 };
 
