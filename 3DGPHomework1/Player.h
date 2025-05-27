@@ -109,4 +109,7 @@ public:
 	virtual ~CTankPlayer();
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPrepareRender();
+	void fireBullet(CGameObject* pickedObj);
+private:
+	CBulletObject* m_ppBullets[50];
 };
