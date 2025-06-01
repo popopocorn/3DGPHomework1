@@ -9,6 +9,7 @@ class CGameFramework;
 class CScene
 {
 public:
+	CScene() = default;
 	CScene(CGameFramework* framework);
 	//~CScene();
 	//씬에서 마우스와 키보드 메시지를 처리한다.

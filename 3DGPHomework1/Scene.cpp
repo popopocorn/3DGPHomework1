@@ -269,3 +269,23 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 	
 	return(pNearestObject);
 }
+
+
+
+
+
+bool Title::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	lParam)
+{
+	return false;
+}
+bool Title::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	lParam)
+{
+	return false;
+}
+void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+
+}
