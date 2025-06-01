@@ -340,7 +340,7 @@ void CBulletObject::Animate(float fElapsedTime)
 
 	m_fRotationAngle += m_fRotationSpeed * fElapsedTime;
 	if (m_fRotationAngle > 360.0f) m_fRotationAngle = m_fRotationAngle - 360.0f;
-
+	
 	XMFLOAT4X4 mtxRotate1 = Matrix4x4::RotationYawPitchRoll(0.0f, m_fRotationAngle, 0.0f);
 
 	XMFLOAT3 xmf3RotationAxis = Vector3::CrossProduct(m_xmf3RotationAxis, m_xmf3MovingDirection, true);
