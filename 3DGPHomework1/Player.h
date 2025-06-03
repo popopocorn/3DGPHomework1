@@ -109,7 +109,11 @@ public:
 	virtual ~CTankPlayer();
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPrepareRender();
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =
+		NULL);
 	void fireBullet(CGameObject* pickedObj);
 private:
-	CBulletObject* m_ppBullets[50];
+	CCubeMeshDiffused* pBulletMesh;
+	CBulletObject* firedBullet;
+	std::vector<CBulletObject*> m_ppBullets;
 };

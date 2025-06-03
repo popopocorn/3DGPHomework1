@@ -404,9 +404,11 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case VK_DOWN:
 		case VK_LEFT:
 		case VK_RIGHT:
+			break;
+		case VK_CONTROL:
+			
 			m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 			break;
-			
 		default:
 			break;
 		}

@@ -320,6 +320,12 @@ CTankPlayer::CTankPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
 	SetShader(pShader);
 	setOOBB();
+	pBulletMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 2, 2, 2);
+	
+	wchar_t dbg[256];
+	swprintf(dbg, 256, L"firedBullet: %p, pBulletMesh: %p\n", firedBullet, pBulletMesh);
+	OutputDebugString(dbg);
+
 }
 CTankPlayer::~CTankPlayer()
 {
@@ -332,33 +338,53 @@ void CTankPlayer::OnPrepareRender()
 
 void CTankPlayer::fireBullet(CGameObject* pickedObj)
 {
-	CBulletObject* pBulletObject = NULL;
-	for (int i = 0; i < 50; i++)
+	
+	firedBullet = new CBulletObject(150);
+	if (pBulletMesh)
+		firedBullet->SetMesh(pBulletMesh);
+	else
+		OutputDebugString(L"총알없음\n");
+	//m_ppBullets[i]->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
+	//m_ppBullets[i]->SetRotationSpeed(360.0f);
+	//m_ppBullets[i]->SetMovingSpeed(120.0f);
+	XMFLOAT3 temp = Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetRight(), 7.5f, false));
+	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetUp(), 7.5f, false));
+	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), 13.0f, false));
+	firedBullet->SetPosition(temp);
+	m_ppBullets.push_back(firedBullet);
+	XMFLOAT3 xmf3Position = GetPosition();
+	XMFLOAT3 xmf3Direction = GetUp();
+	XMFLOAT3 xmf3FirePosition = Vector3::Add(xmf3Position, Vector3::ScalarProduct(xmf3Direction, 6.0f, false));
+
+	/*pBulletObject->setworld4x4(m_xmf4x4World);
+
+	pBulletObject->SetFirePosition(xmf3FirePosition);
+	pBulletObject->SetMovingDirection(xmf3Direction);
+	pBulletObject->SetActive(true);*/
+
+	/*if (pickedObj)
 	{
-		if (!m_ppBullets[i]->m_bActive)
-		{
-			pBulletObject = m_ppBullets[i];
-			break;
+		pBulletObject->m_pLockedObject = pickedObj;
+	}*/
+}
+
+void CTankPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
+	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다.
+	if (nCameraMode == THIRD_PERSON_CAMERA)
+	{
+		if (m_pShader) m_pShader->Render(pd3dCommandList, pCamera);
+		CGameObject::Render(pd3dCommandList, pCamera);
+		
+	}
+	if (m_ppBullets.size() > 0) {
+		for (int i = 0; i < m_ppBullets.size(); ++i) {
+			m_ppBullets[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
 
-	if (pBulletObject)
-	{
-		XMFLOAT3 xmf3Position = GetPosition();
-		XMFLOAT3 xmf3Direction = GetUp();
-		XMFLOAT3 xmf3FirePosition = Vector3::Add(xmf3Position, Vector3::ScalarProduct(xmf3Direction, 6.0f, false));
 
-		pBulletObject->setworld4x4(m_xmf4x4World);
-
-		pBulletObject->SetFirePosition(xmf3FirePosition);
-		pBulletObject->SetMovingDirection(xmf3Direction);
-		pBulletObject->SetActive(true);
-
-		if (pickedObj)
-		{
-			pBulletObject->m_pLockedObject = pickedObj;
-		}
-	}
 }
 
 CCamera* CTankPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)

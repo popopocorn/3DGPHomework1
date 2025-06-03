@@ -18,7 +18,7 @@ bool CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 		break;
 	case WM_RBUTTONDOWN:
 
-		PickObjectPointedByCursor(LOWORD(lParam), HIWORD(lParam), m_pPlayer->GetCamera());
+		m_pLockedObject = PickObjectPointedByCursor(LOWORD(lParam), HIWORD(lParam), m_pPlayer->GetCamera());
 
 		break;
 	case WM_LBUTTONUP:
@@ -30,6 +30,25 @@ bool CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 	return false;
 }
 bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {
+	
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		
+		case VK_CONTROL:
+			dynamic_cast<CTankPlayer*>(m_pPlayer)->fireBullet(m_pLockedObject);
+			OutputDebugString(L"fire");
+			break;
+
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 	return false;
 }
 void CScene::ProcessInput(HWND hWnd)

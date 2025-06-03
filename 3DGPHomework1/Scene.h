@@ -38,7 +38,9 @@ protected:
 	CObjectsShader* m_pShaders = NULL;
 	int m_nShaders = 0;
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
+	CGameObject* m_pLockedObject = NULL;
 	CGameFramework* m_pFramework;
+
 };
 
 class Title : public CScene {
