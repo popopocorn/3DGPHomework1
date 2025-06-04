@@ -169,6 +169,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	{
 		m_pShaders[i].AnimateObjects(fTimeElapsed);
 	}
+	m_pPlayer->Animate(fTimeElapsed);
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -269,15 +270,24 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 		}
 	}
 	if(pNearestObject){
-		wchar_t buffer[100];
-		std::wstring debugStr = L"OBB Bounding Box Info:\n";
+		if (GroundObject* ground = dynamic_cast<GroundObject*>(pNearestObject))
+		{
+			pNearestObject = NULL;
+			OutputDebugString(L"None\n");
+			
+		}else
 
-		// char → wchar_t 직접 변환
-		swprintf_s(buffer, 100, L"pNearestObject 이름: %c\n", (wchar_t)pNearestObject->debugName);
+		{
+			wchar_t buffer[100];
+			std::wstring debugStr = L"OBB Bounding Box Info:\n";
 
-		debugStr += buffer;
+			// char → wchar_t 직접 변환
+			swprintf_s(buffer, 100, L"pNearestObject 이름: %c\n", (wchar_t)pNearestObject->debugName);
 
-		OutputDebugStringW(debugStr.c_str());
+			debugStr += buffer;
+
+			OutputDebugStringW(debugStr.c_str());
+		}
 	}
 	else {
 		OutputDebugString(L"None\n");

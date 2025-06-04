@@ -109,6 +109,7 @@ public:
 	virtual ~CTankPlayer();
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPrepareRender();
+	virtual void Animate(float fElapsedTime);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =
 		NULL);
 	void fireBullet(CGameObject* pickedObj);

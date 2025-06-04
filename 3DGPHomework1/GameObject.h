@@ -128,14 +128,20 @@ public:
 	float						m_fElapsedTimeAfterFire = 0.0f;
 	float						m_fLockingDelayTime = 0.3f;
 	float						m_fLockingTime = 4.0f;
+	float						bulletSpeed = 300.0f;
 	CGameObject* m_pLockedObject = NULL;
 
 	void SetMovingDirection(XMFLOAT3& xmf3MovingDirection) { m_xmf3MovingDirection = Vector3::Normalize(xmf3MovingDirection); }
 	void setworld4x4(XMFLOAT4X4 mtforset) { m_xmf4x4World = mtforset; }
 	void SetFirePosition(XMFLOAT3 xmf3FirePosition);
 	void Reset();
-
+	bool isAlive() const { return isDie; }
+	void traceObject();
+private:
+	bool isDie{ false };
 };
+
+
 
 class Enemy : public CGameObject {
 

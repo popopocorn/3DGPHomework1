@@ -199,6 +199,8 @@ void CPlayer::Update(float fTimeElapsed)
 	float fDeceleration = (m_fFriction * fTimeElapsed);
 	if (fDeceleration > fLength) fDeceleration = fLength;
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(m_xmf3Velocity, -fDeceleration, true));
+
+	
 }
 
 
@@ -321,10 +323,6 @@ CTankPlayer::CTankPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	SetShader(pShader);
 	setOOBB();
 	pBulletMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 2, 2, 2);
-	
-	wchar_t dbg[256];
-	swprintf(dbg, 256, L"firedBullet: %p, pBulletMesh: %p\n", firedBullet, pBulletMesh);
-	OutputDebugString(dbg);
 
 }
 CTankPlayer::~CTankPlayer()
@@ -334,6 +332,20 @@ CTankPlayer::~CTankPlayer()
 void CTankPlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
+
+}
+void CTankPlayer::Animate(float fTimeElapsed)
+{
+	if (!m_ppBullets.empty())
+	{
+		for (int i = 0; i < m_ppBullets.size(); ++i) {
+			m_ppBullets[i]->Animate(fTimeElapsed);
+			m_ppBullets.erase(
+				std::remove_if(m_ppBullets.begin(), m_ppBullets.end(),
+					[](const CBulletObject* bullet) { return bullet->isAlive(); }), m_ppBullets.end()
+			);
+		}
+	}
 }
 
 void CTankPlayer::fireBullet(CGameObject* pickedObj)
@@ -351,21 +363,12 @@ void CTankPlayer::fireBullet(CGameObject* pickedObj)
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetUp(), 7.5f, false));
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), 13.0f, false));
 	firedBullet->SetPosition(temp);
+	firedBullet->SetMovingDirection(GetLook());
+	if (pickedObj)
+		firedBullet->m_pLockedObject = pickedObj;
+
 	m_ppBullets.push_back(firedBullet);
-	XMFLOAT3 xmf3Position = GetPosition();
-	XMFLOAT3 xmf3Direction = GetUp();
-	XMFLOAT3 xmf3FirePosition = Vector3::Add(xmf3Position, Vector3::ScalarProduct(xmf3Direction, 6.0f, false));
-
-	/*pBulletObject->setworld4x4(m_xmf4x4World);
-
-	pBulletObject->SetFirePosition(xmf3FirePosition);
-	pBulletObject->SetMovingDirection(xmf3Direction);
-	pBulletObject->SetActive(true);*/
-
-	/*if (pickedObj)
-	{
-		pBulletObject->m_pLockedObject = pickedObj;
-	}*/
+	
 }
 
 void CTankPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
