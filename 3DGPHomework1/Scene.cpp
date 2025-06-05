@@ -119,7 +119,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	
 	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
-		500.0f, 5.0f, 500.0f);
+		5000.0f, 5.0f, 5000.0f);
 	CGameObject* Plane = new GroundObject();
 	Plane->SetMesh(pCubeMesh);
 	Plane->SetPosition(0, -7, 0);
@@ -316,5 +316,19 @@ bool Title::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPara
 void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList)
 {
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+	m_nShaders = 1;
+	m_pShaders = new CObjectsShader[m_nShaders];
+	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 
+	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
+		pd3dCommandList, GetGraphicsRootSignature());
+	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
+	m_pPlayer = pAirplanePlayer;
+
+}
+
+void Title::AnimateObjects(float fTimeElapsed)
+{
+	rideTime += fTimeElapsed;
 }

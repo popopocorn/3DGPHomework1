@@ -17,12 +17,12 @@ public:
 		lParam);
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
-	void ProcessInput(HWND hWnd);
+	virtual void ProcessInput(HWND hWnd);
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	void ReleaseObjects();
 	bool ProcessInput(UCHAR* pKeysBuffer);
-	void AnimateObjects(float fTimeElapsed);
+	virtual void AnimateObjects(float fTimeElapsed);
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void ReleaseUploadBuffers();
 	//그래픽 루트 시그너쳐를 생성한다.
@@ -52,5 +52,8 @@ public:
 		lParam);
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
-	
+	virtual void AnimateObjects(float fTimeElapsed);
+	virtual void ProcessInput(HWND hWnd) {};
+private:
+	float rideTime{};
 };

@@ -279,7 +279,7 @@ void CGameFramework::CreateDepthStencilView() {
 void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_pScene = new CScene(this);
+	m_pScene = new Title(this);
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	if(m_pScene->m_pPlayer) m_pCamera = m_pScene->m_pPlayer->GetCamera();
@@ -409,6 +409,10 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			
 			m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 			break;
+
+		case 'N':
+			ChangeScene(new CScene(this));
+			break;
 		default:
 			break;
 		}
@@ -508,8 +512,17 @@ void CGameFramework::MoveToNextFrame() {
 }
 
 void CGameFramework::ChangeScene(CScene* next) {
-	m_pScene->ReleaseObjects();
-	delete m_pScene;
+	ReleaseObjects();
+	
+	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 	m_pScene = next;
-	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
+	if (m_pScene->m_pPlayer) m_pCamera = m_pScene->m_pPlayer->GetCamera();
+	m_pd3dCommandList->Close();
+	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
+	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+	WaitForGpuComplete();
+	if (m_pScene) m_pScene->ReleaseUploadBuffers();
+	m_GameTimer.Reset();
 }
