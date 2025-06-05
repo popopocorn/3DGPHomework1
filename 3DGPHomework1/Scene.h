@@ -9,7 +9,6 @@ class CGameFramework;
 class CScene
 {
 public:
-	CScene() = default;
 	CScene(CGameFramework* framework);
 	//~CScene();
 	//씬에서 마우스와 키보드 메시지를 처리한다.
@@ -45,7 +44,7 @@ protected:
 
 class Title : public CScene {
 public:
-	Title(CGameFramework* framework) { m_pFramework = framework; }
+	Title(CGameFramework* framework) :CScene(framework) { m_pFramework = framework; }
 	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
@@ -53,13 +52,13 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void AnimateObjects(float fTimeElapsed);
-	virtual void ProcessInput(HWND hWnd) {};
+	//virtual void ProcessInput(HWND hWnd) {};
 private:
 };
 
 class Rollercoaster : public CScene {
 public:
-	Rollercoaster(CGameFramework* framework) { m_pFramework = framework; };
+	Rollercoaster(CGameFramework* framework) : CScene(framework) { m_pFramework = framework; };
 	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
@@ -67,7 +66,8 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void AnimateObjects(float fTimeElapsed);
-	virtual void ProcessInput(HWND hWnd) {};
+	virtual void ProcessInput(HWND hWnd);
 private:
 	float rideTime{};
+	float speed{};
 };

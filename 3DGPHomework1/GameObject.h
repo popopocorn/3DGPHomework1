@@ -146,3 +146,7 @@ private:
 class Enemy : public CGameObject {
 
 };
+
+class Rail : public CGameObject {
+
+};

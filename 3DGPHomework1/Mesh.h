@@ -105,4 +105,20 @@ public:
 	virtual ~CTankMeshDiffused();
 };
 
+
+class RollercoaterRail : public CMesh
+{
+public:
+	RollercoaterRail(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f));
+	virtual ~RollercoaterRail();
+};
 void ReadModel(const char*, std::vector<CDiffusedVertex>&, XMFLOAT3, XMFLOAT4);
+
+class CartModel : public CMesh
+{
+public:
+	CartModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f));
+	virtual ~CartModel();
+};

@@ -143,9 +143,9 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	e2->debugName = '2';
 	m_pShaders[0].m_ppObjects.push_back(e2);
 
-	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
+	CTankPlayer* pPlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
-	m_pPlayer = pAirplanePlayer;
+	m_pPlayer = pPlayer;
 
 }
 
@@ -341,10 +341,10 @@ void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 
-	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
+	CTankPlayer* pPlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
-	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
-	m_pPlayer = pAirplanePlayer;
+	pPlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
+	m_pPlayer = pPlayer;
 
 
 }
@@ -384,20 +384,128 @@ void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 
-	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
+	Cart* pPlayer = new Cart(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
+	pPlayer->SetPosition(XMFLOAT3(0, 3, -2));
+	pPlayer->Rotate(0, -90, 0);
+	pPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0);
+	m_pPlayer = pPlayer;
+	CMesh* railObject = new RollercoaterRail(pd3dDevice, pd3dCommandList);
+
+	CGameObject* r1 = new Rail();
+	r1->SetMesh(railObject);
+	r1->SetPosition(0, 0, 0);
+	m_pShaders[0].m_ppObjects.push_back(r1);
 	
-	m_pPlayer = pAirplanePlayer;
 
 }
 
 void Rollercoaster::AnimateObjects(float fTimeElapsed)
 {
 	rideTime += fTimeElapsed;
-
-	if (rideTime > 3.0f){
-		m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
-		rideTime = 0;
+	
+	if (rideTime < 2.0f){
+		speed = 10;
+		
 	}
+	else if (rideTime < 12.5f) {
+		if(m_pPlayer->GetPitch() < 15)
+			m_pPlayer->Rotate(-30, 0, 0);
+		speed = 7;
+		
+	}
+	else if (rideTime < 13.0f) {
+		if (m_pPlayer->GetPitch() >= 330)
+			m_pPlayer->Rotate(-330, 0, 0);
+		
+	}
+	else if (rideTime < 23.0f) {
+		if (m_pPlayer->GetYaw() > 180)
+			m_pPlayer->Rotate(0, -9.5*fTimeElapsed, 0);
+		
+	}
+	else if(rideTime < 26.0f){
+		if (m_pPlayer->GetYaw() != 180)
+			m_pPlayer->Rotate(0, 180 - m_pPlayer->GetYaw(), 0);
+		if (m_pPlayer->GetPitch() < 15)
+			m_pPlayer->Rotate(32, 0, 0);
+		speed += 9.8*fTimeElapsed;
+		
+	}
+	else if (rideTime < 27.0f) {
+		if(m_pPlayer->GetPitch()>30 && m_pPlayer->GetPitch() < 320)
+			m_pPlayer->Rotate(-62, 0, 0);
+		speed -= 9.8 * fTimeElapsed;
+		 
+	}
+	else if (rideTime < 28.0f) {
+		if (m_pPlayer->GetPitch() > 320 || m_pPlayer->GetPitch() < 40)
+			m_pPlayer->Rotate(75.0 * fTimeElapsed, 0, 0);
+		 
+	}
+	else if (rideTime < 28.5f) {
+		if (m_pPlayer->GetPitch() != 40)
+			m_pPlayer->Rotate(40 - m_pPlayer->GetPitch(), 0, 0);
+		speed += 9.8 * fTimeElapsed;
+		 
+	}
+	else if (rideTime < 29.0f) {
+		if (m_pPlayer->GetPitch() > 0 && m_pPlayer->GetPitch() < 41)
+			m_pPlayer->Rotate(-75.0*fTimeElapsed, 0, 0);
+		 
+	}
+	else if (rideTime < 31.8f) {
+		if(m_pPlayer->GetPitch() != 0)
+			m_pPlayer->Rotate(0- m_pPlayer->GetPitch(), 0, 0);
+		if (m_pPlayer->GetYaw() > 47)
+			m_pPlayer->Rotate(0, -52.0 * fTimeElapsed, 0);
+		 
+	}
+	else if (rideTime < 33.2f) {
+		if (m_pPlayer->GetYaw() != 47)
+			m_pPlayer->Rotate(0, 47 - m_pPlayer->GetYaw(), 0);
+		if (m_pPlayer->GetPitch() < 5 || m_pPlayer->GetPitch() > 340)
+			m_pPlayer->Rotate(-60 * fTimeElapsed, 0, 0);
+		 
+	}
+	else if (rideTime < 34.7f) {
+		if (m_pPlayer->GetPitch() < 25 || m_pPlayer->GetPitch() > 330)
+			m_pPlayer->Rotate(60 * fTimeElapsed, 0, 0);
+		 
+	}else if(rideTime < 36.0f) {
+		if (m_pPlayer->GetPitch() < 30 && m_pPlayer->GetPitch() > 0)
+			m_pPlayer->Rotate( -60 * fTimeElapsed, 0, 0);
+		 
+	}else if (rideTime < 38.2f) {
+		if (m_pPlayer->GetPitch() != 0)
+			m_pPlayer->Rotate(0 - m_pPlayer->GetPitch(), 0, 0);
+		 
+	}
+	else if (rideTime < 42.0f) {
+		if (m_pPlayer->GetYaw() < 50 || m_pPlayer->GetYaw() > 270)
+			m_pPlayer->Rotate(0, -48.0 * fTimeElapsed, 0);
+		 
+	}
+	else if (rideTime < 44.0f) {
+		speed = 5;
+		
+	}
+	else if (rideTime < 45.0f) {
+		speed = 0;
+	}
+	else {
+		m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
+	}
+	m_pPlayer->Move(Vector3::ScalarProduct(m_pPlayer->GetLookVector(), fTimeElapsed * speed), false);
 
+	
+	char buffer[64];
+	sprintf(buffer, "dist: %f\n", m_pPlayer->GetYaw());
+	OutputDebugStringA(buffer);
+	m_pPlayer->Update(m_pFramework->GetTimer().GetTimeElapsed());
+}
+
+void Rollercoaster::ProcessInput(HWND hWnd)
+{
+	
 }

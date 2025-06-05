@@ -76,7 +76,7 @@ public:
 	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	//플레이어를 회전하는 함수이다.
-	void Rotate(float x, float y, float z);
+	virtual void Rotate(float x, float y, float z);
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
 	//플레이어의 위치가 바뀔 때마다 호출되는 함수와 그 함수에서 사용하는 정보를 설정하는 함수이다.
@@ -117,4 +117,14 @@ private:
 	CCubeMeshDiffused* pBulletMesh;
 	CBulletObject* firedBullet;
 	std::vector<CBulletObject*> m_ppBullets;
+};
+
+class Cart : public CPlayer{
+public:
+	Cart(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+		ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~Cart();
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPrepareRender();
+	virtual void Rotate(float x, float y, float z);
 };
