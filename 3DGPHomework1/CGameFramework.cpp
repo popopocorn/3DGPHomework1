@@ -386,9 +386,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
 		case VK_RETURN:
 			break;
 		case VK_F1:
@@ -407,7 +404,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 		case VK_CONTROL:
 			
-			m_pScene.back()->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+			
 			break;
 
 		case 'N':
@@ -425,6 +422,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	default:
 		break;
 	}
+	m_pScene.back()->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {
 	switch (nMessageID)

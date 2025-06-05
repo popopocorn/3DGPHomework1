@@ -36,7 +36,9 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		
+		case VK_ESCAPE:
+			m_pFramework->popScene();
+			m_pFramework->popScene();
 		case VK_CONTROL:
 			dynamic_cast<CTankPlayer*>(m_pPlayer)->fireBullet(m_pLockedObject);
 			OutputDebugString(L"fire");
@@ -319,6 +321,16 @@ bool Title::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, 
 bool Title::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 	lParam)
 {
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		}
+	}
 	return false;
 }
 void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
@@ -331,7 +343,9 @@ void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
+	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
 	m_pPlayer = pAirplanePlayer;
+
 
 }
 
@@ -343,11 +357,23 @@ void Title::AnimateObjects(float fTimeElapsed)
 bool Rollercoaster::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 	lParam)
 {
+	
+
 	return false;
 }
 bool Rollercoaster::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 	lParam)
 {
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			m_pFramework->popScene();
+			break;
+		}
+	}
 	return false;
 }
 void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
@@ -360,11 +386,18 @@ void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 
 	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
-	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
+	
 	m_pPlayer = pAirplanePlayer;
 
 }
 
 void Rollercoaster::AnimateObjects(float fTimeElapsed)
 {
+	rideTime += fTimeElapsed;
+
+	if (rideTime > 3.0f){
+		m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
+		rideTime = 0;
+	}
+
 }
