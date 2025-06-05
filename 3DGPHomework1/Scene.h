@@ -45,7 +45,21 @@ protected:
 
 class Title : public CScene {
 public:
-	Title(CGameFramework* framework) {};
+	Title(CGameFramework* framework) { m_pFramework = framework; }
+	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+	virtual void AnimateObjects(float fTimeElapsed);
+	virtual void ProcessInput(HWND hWnd) {};
+private:
+};
+
+class Rollercoaster : public CScene {
+public:
+	Rollercoaster(CGameFramework* framework) { m_pFramework = framework; };
 	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM

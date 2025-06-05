@@ -306,6 +306,14 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 bool Title::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 	lParam)
 {
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		::GetCursorPos(&m_ptOldCursorPos);
+		m_pFramework->reqeustChangeScene(new Rollercoaster(m_pFramework));
+		break;
+	}
 	return false;
 }
 bool Title::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
@@ -323,12 +331,40 @@ void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
-	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
 	m_pPlayer = pAirplanePlayer;
 
 }
 
 void Title::AnimateObjects(float fTimeElapsed)
 {
-	rideTime += fTimeElapsed;
+}
+
+
+bool Rollercoaster::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	lParam)
+{
+	return false;
+}
+bool Rollercoaster::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	lParam)
+{
+	return false;
+}
+void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+	m_nShaders = 1;
+	m_pShaders = new CObjectsShader[m_nShaders];
+	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+
+	CTankPlayer* pAirplanePlayer = new CTankPlayer(pd3dDevice,
+		pd3dCommandList, GetGraphicsRootSignature());
+	pAirplanePlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
+	m_pPlayer = pAirplanePlayer;
+
+}
+
+void Rollercoaster::AnimateObjects(float fTimeElapsed)
+{
 }

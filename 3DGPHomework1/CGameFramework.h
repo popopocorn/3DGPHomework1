@@ -37,7 +37,9 @@ public:
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	void ChangeScene(CScene* next);
+	void reqeustChangeScene(CScene* next) { nextScene = next; }
+	void ChangeScene();
+	void popScene();
 	
 	
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다.
@@ -85,7 +87,8 @@ private:
 	CGameTimer m_GameTimer;
 	_TCHAR m_pszFrameRate[50];
 
-	CScene* m_pScene;
+	std::vector<CScene*> m_pScene;
+	CScene* nextScene{};
 public:
 	CGameTimer GetTimer() {	return m_GameTimer; }
 };

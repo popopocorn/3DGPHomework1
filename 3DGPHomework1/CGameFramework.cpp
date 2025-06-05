@@ -36,7 +36,6 @@ CGameFramework::CGameFramework()
 
 	for (int i = 0; i < m_nSwapChainBuffers; ++i)
 		m_nFenceValues[i] = 0;
-	m_pScene = NULL;
 
 
 
@@ -279,23 +278,21 @@ void CGameFramework::CreateDepthStencilView() {
 void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_pScene = new Title(this);
-	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	m_pScene.push_back(new Title(this));
+	if (m_pScene.back()) m_pScene.back()->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	if(m_pScene->m_pPlayer) m_pCamera = m_pScene->m_pPlayer->GetCamera();
+	if(m_pScene.back()->m_pPlayer) m_pCamera = m_pScene.back()->m_pPlayer->GetCamera();
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 	WaitForGpuComplete();
-	if (m_pScene) m_pScene->ReleaseUploadBuffers();
+	if (m_pScene.back()) m_pScene.back()->ReleaseUploadBuffers();
 	m_GameTimer.Reset();
 }
 
 void CGameFramework::ReleaseObjects() {
-	if (m_pScene)
-		m_pScene->ReleaseObjects();
-	if (m_pScene)
-		delete m_pScene;
+	if (m_pScene.back())
+		m_pScene.back()->ReleaseObjects();
 }
 
 void CGameFramework::ProcessInput()
@@ -303,13 +300,13 @@ void CGameFramework::ProcessInput()
 
 }
 void CGameFramework::AnimateObjects() {
-	if (m_pScene)
-		m_pScene->AnimateObjects(m_GameTimer.GetTimeElapsed());
+	if (m_pScene.back())
+		m_pScene.back()->AnimateObjects(m_GameTimer.GetTimeElapsed());
 }
 void CGameFramework::FrameAdvance()
 {
 	m_GameTimer.Tick(0.0f);
-	m_pScene->ProcessInput(m_hWnd);
+	m_pScene.back()->ProcessInput(m_hWnd);
 	AnimateObjects();
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
@@ -336,7 +333,7 @@ void CGameFramework::FrameAdvance()
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE,
 		&d3dDsvCPUDescriptorHandle);
-	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
+	if (m_pScene.back()) m_pScene.back()->Render(m_pd3dCommandList, m_pCamera);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다.
 #ifdef _WITH_PLAYER_TOP
 //렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다.
@@ -344,7 +341,7 @@ void CGameFramework::FrameAdvance()
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 	//3인칭 카메라일 때 플레이어를 렌더링한다.
-	if (m_pScene->m_pPlayer) m_pScene->m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	if (m_pScene.back()->m_pPlayer) m_pScene.back()->m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -357,6 +354,9 @@ void CGameFramework::FrameAdvance()
 	MoveToNextFrame();
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 11, 37);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
+
+	if (nextScene)
+		ChangeScene();
 }
 
 void CGameFramework::WaitForGpuComplete() {
@@ -376,7 +376,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	case WM_RBUTTONDOWN:
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
-		m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+		m_pScene.back()->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 		break;
 	}
 }
@@ -407,12 +407,17 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 		case VK_CONTROL:
 			
-			m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+			m_pScene.back()->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 			break;
 
 		case 'N':
-			ChangeScene(new CScene(this));
+			reqeustChangeScene(new CScene(this));
 			break;
+		case VK_BACK:
+			if (m_pScene.size() > 1)
+				popScene();
+			else
+				::PostQuitMessage(0);
 		default:
 			break;
 		}
@@ -463,8 +468,8 @@ void CGameFramework::ChangeSwapChainState() {
 		ScreenHeight = FullScreenHeight;
 
 		
-		m_pScene->m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
-		m_pScene->m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
+		m_pScene.back()->m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
+		m_pScene.back()->m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
 	}
 	else {
 		dxgiTargetParameters.Width = m_nWndClientWidth;
@@ -473,8 +478,8 @@ void CGameFramework::ChangeSwapChainState() {
 		ScreenHeight = m_nWndClientHeight;
 
 		
-		m_pScene->m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
-		m_pScene->m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
+		m_pScene.back()->m_pPlayer->GetCamera()->SetViewport(0, 0, (int)ScreenWidth, (int)ScreenHeight, 0.0f, 1.0f);
+		m_pScene.back()->m_pPlayer->GetCamera()->SetScissorRect(0, 0, (long)ScreenWidth, (long)ScreenHeight);
 	}
 		
 	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -511,18 +516,36 @@ void CGameFramework::MoveToNextFrame() {
 	}
 }
 
-void CGameFramework::ChangeScene(CScene* next) {
+void CGameFramework::ChangeScene() {
 	ReleaseObjects();
 	
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_pScene = next;
-	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	m_pScene.push_back(nextScene);
+	if (m_pScene.back()) m_pScene.back()->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	if (m_pScene->m_pPlayer) m_pCamera = m_pScene->m_pPlayer->GetCamera();
+	if (m_pScene.back()->m_pPlayer) m_pCamera = m_pScene.back()->m_pPlayer->GetCamera();
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 	WaitForGpuComplete();
-	if (m_pScene) m_pScene->ReleaseUploadBuffers();
+	if (m_pScene.back()) m_pScene.back()->ReleaseUploadBuffers();
+	m_GameTimer.Reset();
+	nextScene = NULL;
+}
+
+void CGameFramework::popScene()
+{
+	ReleaseObjects();
+
+	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+	m_pScene.pop_back();
+	if (m_pScene.back()) m_pScene.back()->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
+	if (m_pScene.back()->m_pPlayer) m_pCamera = m_pScene.back()->m_pPlayer->GetCamera();
+	m_pd3dCommandList->Close();
+	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
+	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+	WaitForGpuComplete();
+	if (m_pScene.back()) m_pScene.back()->ReleaseUploadBuffers();
 	m_GameTimer.Reset();
 }
