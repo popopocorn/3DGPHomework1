@@ -227,10 +227,10 @@ void GroundObject::Animate(float fTimeElapsed)
 
 
 XMFLOAT3 CExplosiveObject::m_pxmf3SphereVectors[EXPLOSION_DEBRISES];
-CMesh* CExplosiveObject::m_pExplosionMesh = NULL;
 
 CExplosiveObject::CExplosiveObject()
 {
+	m_bBlowingUp = true;
 }
 
 CExplosiveObject::~CExplosiveObject()
@@ -262,6 +262,7 @@ void CExplosiveObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamer
 
 void CExplosiveObject::Animate(float fElapsedTime)
 {
+	
 	if (m_bBlowingUp)
 	{
 		m_fElapsedTimes += fElapsedTime;
@@ -276,6 +277,7 @@ void CExplosiveObject::Animate(float fElapsedTime)
 				m_pxmf4x4Transforms[i]._43 = xmf3Position.z + m_pxmf3SphereVectors[i].z * m_fExplosionSpeed * m_fElapsedTimes;
 				m_pxmf4x4Transforms[i] = Matrix4x4::Multiply(Matrix4x4::RotationAxis(m_pxmf3SphereVectors[i], m_fExplosionRotation * m_fElapsedTimes), m_pxmf4x4Transforms[i]);
 			}
+			
 		}
 		else
 		{
@@ -345,5 +347,5 @@ void CBulletObject::traceObject()
 
 void Enemy::DoCollision()
 {
-	OutputDebugString(L"e\n");
+	isDie = true;
 }

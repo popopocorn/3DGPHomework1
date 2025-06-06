@@ -172,6 +172,18 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pShaders[i].AnimateObjects(fTimeElapsed);
 	}
 	m_pPlayer->Animate(fTimeElapsed);
+
+
+	m_pShaders[0].m_ppObjects.erase(
+		std::remove_if(m_pShaders[0].m_ppObjects.begin(), m_pShaders[0].m_ppObjects.end(),
+			[](CGameObject* e) { 
+				if (dynamic_cast<Enemy*>(e))
+					return dynamic_cast<Enemy*>(e)->isAlive();
+				else
+					return false;
+			
+			}), m_pShaders[0].m_ppObjects.end()
+	);
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -209,10 +221,19 @@ void CScene::CheckCollisions()
 		for(int j=0; j< temp->m_ppBullets.size(); ++j){
 			if (GroundObject* gr = dynamic_cast<GroundObject*>(m_pShaders[0].m_ppObjects[i]))
 				continue;
+			if (CExplosiveObject* ex = dynamic_cast<CExplosiveObject*>(m_pShaders[0].m_ppObjects[i]))
+				continue;
 			if (m_pShaders[0].m_ppObjects[i]->getOOBB().Intersects(temp->m_ppBullets[j]->getOOBB())) {
 				m_pShaders[0].m_ppObjects[i]->DoCollision();
 				temp->m_ppBullets[j]->DoCollision();
+				
 				collieded = true;
+				XMFLOAT3 a = m_pShaders[0].m_ppObjects[i]->GetPosition();
+				CGameObject* explosion = new CExplosiveObject();
+				explosion->SetPosition(a);
+				explosion->SetMesh(temp->m_ppBullets[j]->getMesh());
+				dynamic_cast<CExplosiveObject*>(explosion)->PrepareExplosion();
+				m_pShaders[0].m_ppObjects.push_back(explosion);
 				break;
 			}
 		}

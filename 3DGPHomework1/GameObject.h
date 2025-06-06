@@ -95,13 +95,12 @@ public:
 	float						m_fDuration = 2.0f;
 	float						m_fExplosionSpeed = 10.0f;
 	float						m_fExplosionRotation = 720.0f;
-
+	virtual void OnPrepareRender() {};
 	virtual void Animate(float fElapsedTime);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, int idx);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 public:
-	static CMesh* m_pExplosionMesh;
 	static XMFLOAT3				m_pxmf3SphereVectors[EXPLOSION_DEBRISES];
 
 	static void PrepareExplosion();
@@ -147,7 +146,11 @@ private:
 
 
 class Enemy : public CGameObject {
+public:
 	virtual void DoCollision();
+	bool isAlive() const { return isDie; }
+private:
+	bool isDie{false};
 };
 
 class Rail : public CGameObject {
