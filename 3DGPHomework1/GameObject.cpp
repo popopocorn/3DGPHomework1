@@ -332,7 +332,7 @@ void CBulletObject::Animate(float fElapsedTime)
 
 void CBulletObject::DoCollision()
 {
-	OutputDebugString(L"b\n");
+	isDie = true;
 }
 
 void CBulletObject::traceObject() 

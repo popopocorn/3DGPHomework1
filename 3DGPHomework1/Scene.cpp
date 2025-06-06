@@ -210,10 +210,8 @@ void CScene::CheckCollisions()
 			if (GroundObject* gr = dynamic_cast<GroundObject*>(m_pShaders[0].m_ppObjects[i]))
 				continue;
 			if (m_pShaders[0].m_ppObjects[i]->getOOBB().Intersects(temp->m_ppBullets[j]->getOOBB())) {
-				wchar_t buffer[256];
-				swprintf(buffer, 256, L"Bullet cnt: %c,\n", m_pShaders[0].m_ppObjects[i]->debugName);
-				OutputDebugString(buffer);
-				OutputDebugString(L"hit\n");
+				m_pShaders[0].m_ppObjects[i]->DoCollision();
+				temp->m_ppBullets[j]->DoCollision();
 				collieded = true;
 				break;
 			}

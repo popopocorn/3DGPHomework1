@@ -360,9 +360,7 @@ void CTankPlayer::fireBullet(CGameObject* pickedObj)
 		firedBullet->SetMesh(pBulletMesh);
 	else
 		OutputDebugString(L"ÃÑ¾Ë¾øÀ½\n");
-	//m_ppBullets[i]->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
-	//m_ppBullets[i]->SetRotationSpeed(360.0f);
-	//m_ppBullets[i]->SetMovingSpeed(120.0f);
+
 	XMFLOAT3 temp = Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetRight(), 1.5f, false));
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetUp(), 7.5f, false));
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), 13.0f, false));
@@ -370,11 +368,8 @@ void CTankPlayer::fireBullet(CGameObject* pickedObj)
 	firedBullet->SetMovingDirection(GetLook());
 	if (pickedObj)
 		firedBullet->m_pLockedObject = pickedObj;
-
+	firedBullet->OnPrepareRender();
 	m_ppBullets.push_back(firedBullet);
-	/*wchar_t buffer[256];
-	swprintf(buffer, 256, L"Bullet cnt: %d,\n", m_ppBullets.size());
-	OutputDebugString(buffer);*/
 }
 
 void CTankPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
