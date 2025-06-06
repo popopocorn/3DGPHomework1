@@ -113,10 +113,11 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =
 		NULL);
 	void fireBullet(CGameObject* pickedObj);
+	std::vector<CBulletObject*> m_ppBullets;
 private:
 	CCubeMeshDiffused* pBulletMesh;
 	CBulletObject* firedBullet;
-	std::vector<CBulletObject*> m_ppBullets;
+	
 };
 
 class Cart : public CPlayer{

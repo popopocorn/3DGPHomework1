@@ -39,9 +39,9 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 		case VK_ESCAPE:
 			m_pFramework->popScene();
 			m_pFramework->popScene();
+			break;
 		case VK_CONTROL:
 			dynamic_cast<CTankPlayer*>(m_pPlayer)->fireBullet(m_pLockedObject);
-			OutputDebugString(L"fire");
 			break;
 
 		default:
@@ -195,6 +195,34 @@ ID3D12RootSignature* CScene::GetGraphicsRootSignature()
 	return(m_pd3dGraphicsRootSignature);
 }
 
+
+void CScene::CheckCollisions()
+{
+	bool collieded{ false };
+	CTankPlayer* temp;
+	if (temp = dynamic_cast<CTankPlayer*>(m_pPlayer)) {
+		
+	}else
+		return;
+
+	for (int i = 0; i < m_pShaders[0].m_ppObjects.size(); ++i) {
+		for(int j=0; j< temp->m_ppBullets.size(); ++j){
+			if (GroundObject* gr = dynamic_cast<GroundObject*>(m_pShaders[0].m_ppObjects[i]))
+				continue;
+			if (m_pShaders[0].m_ppObjects[i]->getOOBB().Intersects(temp->m_ppBullets[j]->getOOBB())) {
+				
+				//OutputDebugString(L"hit\n");
+				collieded = true;
+				break;
+			}
+		}
+		if (collieded)
+			break;
+	}
+	/*wchar_t buffer[256];
+	swprintf(buffer, 256, L"Bullet cnt: %d,\n", temp->m_ppBullets.size());
+	OutputDebugString(buffer);*/
+}
 
 
 ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevice)
@@ -495,13 +523,14 @@ void Rollercoaster::AnimateObjects(float fTimeElapsed)
 	}
 	else {
 		m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
+		rideTime = 0;
 	}
 	m_pPlayer->Move(Vector3::ScalarProduct(m_pPlayer->GetLookVector(), fTimeElapsed * speed), false);
 
 	
-	char buffer[64];
+	/*char buffer[64];
 	sprintf(buffer, "dist: %f\n", m_pPlayer->GetYaw());
-	OutputDebugStringA(buffer);
+	OutputDebugStringA(buffer);*/
 	m_pPlayer->Update(m_pFramework->GetTimer().GetTimeElapsed());
 }
 

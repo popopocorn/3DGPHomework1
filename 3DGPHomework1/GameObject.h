@@ -137,6 +137,7 @@ public:
 	void Reset();
 	bool isAlive() const { return isDie; }
 	void traceObject();
+	CMesh* getMesh() { return m_pMesh; }
 private:
 	bool isDie{ false };
 };

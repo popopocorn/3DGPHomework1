@@ -332,6 +332,10 @@ CTankPlayer::~CTankPlayer()
 void CTankPlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
+	for (int i = 0; i < m_ppBullets.size(); ++i) {
+		m_ppBullets[i]->OnPrepareRender();
+	}
+
 
 }
 void CTankPlayer::Animate(float fTimeElapsed)
@@ -368,7 +372,9 @@ void CTankPlayer::fireBullet(CGameObject* pickedObj)
 		firedBullet->m_pLockedObject = pickedObj;
 
 	m_ppBullets.push_back(firedBullet);
-	
+	/*wchar_t buffer[256];
+	swprintf(buffer, 256, L"Bullet cnt: %d,\n", m_ppBullets.size());
+	OutputDebugString(buffer);*/
 }
 
 void CTankPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

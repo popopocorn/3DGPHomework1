@@ -308,6 +308,7 @@ void CGameFramework::FrameAdvance()
 	m_GameTimer.Tick(0.0f);
 	m_pScene.back()->ProcessInput(m_hWnd);
 	AnimateObjects();
+	m_pScene.back()->CheckCollisions();
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 	D3D12_RESOURCE_BARRIER d3dResourceBarrier;
