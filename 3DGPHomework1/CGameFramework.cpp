@@ -398,24 +398,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case VK_F9:
 			ChangeSwapChainState();
 			break;
-		case VK_UP:
-		case VK_DOWN:
-		case VK_LEFT:
-		case VK_RIGHT:
-			break;
-		case VK_CONTROL:
-			
-			
-			break;
-
-		case 'N':
-			reqeustChangeScene(new CScene(this));
-			break;
-		case VK_BACK:
-			if (m_pScene.size() > 1)
-				popScene();
-			else
-				::PostQuitMessage(0);
 		default:
 			break;
 		}

@@ -37,8 +37,7 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 		switch (wParam)
 		{
 		case VK_ESCAPE:
-			m_pFramework->popScene();
-			m_pFramework->popScene();
+			m_pFramework->reqeustChangeScene(new Title(m_pFramework));
 			break;
 		case VK_CONTROL:
 			dynamic_cast<CTankPlayer*>(m_pPlayer)->fireBullet(m_pLockedObject);
@@ -159,6 +158,7 @@ void CScene::ReleaseObjects()
 		m_pShaders[i].ReleaseObjects();
 	}
 	if (m_pShaders) delete[] m_pShaders;
+	if (m_pPlayer) delete m_pPlayer;
 }
 
 bool CScene::ProcessInput(UCHAR* pKeysBuffer) {
@@ -397,6 +397,9 @@ bool Rollercoaster::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPAR
 	case WM_KEYUP:
 		switch (wParam)
 		{
+
+		case 'N':
+			m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
 		case VK_ESCAPE:
 			m_pFramework->popScene();
 			break;
@@ -524,6 +527,7 @@ void Rollercoaster::AnimateObjects(float fTimeElapsed)
 	else {
 		m_pFramework->reqeustChangeScene(new CScene(m_pFramework));
 		rideTime = 0;
+		
 	}
 	m_pPlayer->Move(Vector3::ScalarProduct(m_pPlayer->GetLookVector(), fTimeElapsed * speed), false);
 
