@@ -17,6 +17,7 @@ public:
 	void Release() { if (--m_nReferences <= 0) delete this; }
 	void Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
 	char debugName;
+	virtual void DoCollision() {};
 protected:
 	XMFLOAT4X4 m_xmf4x4World;
 	CMesh* m_pMesh = NULL;
@@ -118,6 +119,7 @@ public:
 
 public:
 	virtual void Animate(float fElapsedTime);
+	virtual void DoCollision();
 
 	float						m_fBulletEffectiveRange = 50.0f;
 	float						m_fMovingDistance = 0.0f;
@@ -145,7 +147,7 @@ private:
 
 
 class Enemy : public CGameObject {
-
+	virtual void DoCollision();
 };
 
 class Rail : public CGameObject {

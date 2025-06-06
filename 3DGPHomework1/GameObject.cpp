@@ -330,10 +330,20 @@ void CBulletObject::Animate(float fElapsedTime)
 
 }
 
+void CBulletObject::DoCollision()
+{
+	OutputDebugString(L"b\n");
+}
+
 void CBulletObject::traceObject() 
 {
 	m_xmf3MovingDirection.x = m_pLockedObject->GetPosition().x - m_xmf4x4World._41;
 	m_xmf3MovingDirection.y = m_pLockedObject->GetPosition().y - m_xmf4x4World._42;
 	m_xmf3MovingDirection.z = m_pLockedObject->GetPosition().z - m_xmf4x4World._43;
 	m_xmf3MovingDirection = Vector3::Normalize(m_xmf3MovingDirection);
+}
+
+void Enemy::DoCollision()
+{
+	OutputDebugString(L"e\n");
 }
