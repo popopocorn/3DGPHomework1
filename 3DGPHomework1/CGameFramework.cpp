@@ -300,6 +300,7 @@ void CGameFramework::ProcessInput()
 
 }
 void CGameFramework::AnimateObjects() {
+	
 	if (m_pScene.back())
 		m_pScene.back()->AnimateObjects(m_GameTimer.GetTimeElapsed());
 }
@@ -355,7 +356,7 @@ void CGameFramework::FrameAdvance()
 	MoveToNextFrame();
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 11, 37);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
-
+	m_pScene.back()->CheckDelete();
 	if (nextScene)
 		ChangeScene();
 }

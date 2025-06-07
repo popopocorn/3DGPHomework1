@@ -132,7 +132,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	
 	CGameObject* e1 = new Enemy();
 	e1->SetMesh(SmallCubeMesh);
-	e1->SetPosition(0, 0, 0);
+	e1->SetPosition(-20, 0, 0);
 	e1->debugName = '1';
 	m_pShaders[0].m_ppObjects.push_back(e1);
 
@@ -167,23 +167,14 @@ bool CScene::ProcessInput(UCHAR* pKeysBuffer) {
 
 void CScene::AnimateObjects(float fTimeElapsed)
 {
+	
 	for (int i = 0; i < m_nShaders; i++)
 	{
+		
 		m_pShaders[i].AnimateObjects(fTimeElapsed);
 	}
 	m_pPlayer->Animate(fTimeElapsed);
 
-
-	m_pShaders[0].m_ppObjects.erase(
-		std::remove_if(m_pShaders[0].m_ppObjects.begin(), m_pShaders[0].m_ppObjects.end(),
-			[](CGameObject* e) { 
-				if (dynamic_cast<Enemy*>(e))
-					return dynamic_cast<Enemy*>(e)->isAlive();
-				else
-					return false;
-			
-			}), m_pShaders[0].m_ppObjects.end()
-	);
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -243,6 +234,22 @@ void CScene::CheckCollisions()
 	/*wchar_t buffer[256];
 	swprintf(buffer, 256, L"Bullet cnt: %d,\n", temp->m_ppBullets.size());
 	OutputDebugString(buffer);*/
+}
+
+void CScene::CheckDelete()
+{
+	m_pShaders[0].m_ppObjects.erase(
+		std::remove_if(m_pShaders[0].m_ppObjects.begin(), m_pShaders[0].m_ppObjects.end(),
+			[](CGameObject* e) {
+				if (dynamic_cast<Enemy*>(e))
+					return dynamic_cast<Enemy*>(e)->isAlive();
+				else if (dynamic_cast<CExplosiveObject*>(e))
+					return dynamic_cast<CExplosiveObject*>(e)->isAlive();
+				else
+					return false;
+
+			}), m_pShaders[0].m_ppObjects.end()
+				);
 }
 
 

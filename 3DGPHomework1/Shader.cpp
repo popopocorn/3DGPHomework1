@@ -265,7 +265,8 @@ void CObjectsShader::ReleaseObjects()
 
 void CObjectsShader::AnimateObjects(float fTimeElapsed)
 {
-	for (int j = 0; j < m_nObjects; j++)
+
+	for (int j = 0; j < m_ppObjects.size(); j++)
 	{
 		m_ppObjects[j]->Animate(fTimeElapsed);
 	}

@@ -99,11 +99,14 @@ public:
 	virtual void Animate(float fElapsedTime);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, int idx);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	bool isAlive() const { return isDie; }
 
 public:
 	static XMFLOAT3				m_pxmf3SphereVectors[EXPLOSION_DEBRISES];
 
 	static void PrepareExplosion();
+private:
+	bool isDie{ false };
 };
 
 class Obstacle : public CGameObject {
