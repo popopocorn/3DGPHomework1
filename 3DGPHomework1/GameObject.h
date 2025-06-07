@@ -57,7 +57,7 @@ public:
 	void MoveForward(float fDistance = 1.0f);
 	//게임 객체를 회전(x-축, y-축, z-축)한다.
 	void Rotate(float fPitch = 10.0f, float fYaw = 10.0f, float fRoll = 10.0f);
-	void GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection);
+	virtual void GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection);
 
 	BoundingOrientedBox getOOBB() { return m_xmOOBB;  }
 	int PickObjectByRayIntersection(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, float& pfHitDistance);
@@ -92,7 +92,7 @@ public:
 	XMFLOAT4X4					m_pxmf4x4Transforms[EXPLOSION_DEBRISES];
 
 	float						m_fElapsedTimes = 0.0f;
-	float						m_fDuration = 2.0f;
+	float						m_fDuration = 4.0f;
 	float						m_fExplosionSpeed = 10.0f;
 	float						m_fExplosionRotation = 720.0f;
 	virtual void OnPrepareRender() {};
@@ -158,4 +158,12 @@ private:
 
 class Rail : public CGameObject {
 
+};
+
+class UIObject : public CGameObject {
+public:
+	virtual void Animate(float fElapsedTime);
+	virtual void GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection);
+	void setRotate(float speed) { rotateSpeed = speed; }
+	float rotateSpeed{ 36 };
 };

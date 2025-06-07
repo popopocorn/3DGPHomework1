@@ -33,15 +33,16 @@ public:
 	CGameObject* PickObjectPointedByCursor(int xClient, int yClient, CCamera* pCamera);
 	CPlayer* m_pPlayer = NULL;
 	POINT m_ptOldCursorPos;
-	
+
 protected:
 	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다.
-	CObjectsShader* m_pShaders = NULL;
+	std::vector<CObjectsShader*> m_pShaders;
 	int m_nShaders = 0;
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 	CGameObject* m_pLockedObject = NULL;
 	CGameFramework* m_pFramework;
-
+	int EnemyCnt{ 10 };
+	CGameObject* YouWin;
 };
 
 class Title : public CScene {
@@ -55,7 +56,9 @@ public:
 		* pd3dCommandList);
 	virtual void AnimateObjects(float fTimeElapsed);
 	virtual void ProcessInput(HWND hWnd) {};
+	void toTheNext();
 private:
+	CGameObject* explosion;
 };
 
 class Rollercoaster : public CScene {

@@ -287,14 +287,16 @@ void CExplosiveObject::Animate(float fElapsedTime)
 				m_pxmf4x4Transforms[i]._41 = xmf3Position.x + m_pxmf3SphereVectors[i].x * m_fExplosionSpeed * m_fElapsedTimes;
 				m_pxmf4x4Transforms[i]._42 = xmf3Position.y + m_pxmf3SphereVectors[i].y * m_fExplosionSpeed * m_fElapsedTimes;
 				m_pxmf4x4Transforms[i]._43 = xmf3Position.z + m_pxmf3SphereVectors[i].z * m_fExplosionSpeed * m_fElapsedTimes;
-				m_pxmf4x4Transforms[i] = Matrix4x4::Multiply(Matrix4x4::RotationAxis(m_pxmf3SphereVectors[i], m_fExplosionRotation * m_fElapsedTimes), m_pxmf4x4Transforms[i]);
+				
+				/*m_pxmf4x4Transforms[i]._31 = m_pxmf3SphereVectors[i].x;
+				m_pxmf4x4Transforms[i]._32 = m_pxmf3SphereVectors[i].y;
+				m_pxmf4x4Transforms[i]._33 = m_pxmf3SphereVectors[i].z;*/
+
 			}
 			
 		}
 		else
 		{
-			m_bBlowingUp = false;
-			m_fElapsedTimes = 0.0f;
 			isDie = true;
 		}
 	}
@@ -361,4 +363,22 @@ void CBulletObject::traceObject()
 void Enemy::DoCollision()
 {
 	isDie = true;
+}
+
+void UIObject::Animate(float fElapsedTime)
+{
+	XMFLOAT3 axis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	Rotate(&axis, rotateSpeed * fElapsedTime);
+}
+
+void UIObject::GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection)
+{
+	
+	XMMATRIX xmmtxToModel = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_xmf4x4World));
+
+	XMFLOAT3 xmf3CameraOrigin(0.0f, 0.0f, 0.0f);
+	xmvPickRayOrigin = XMVector3TransformCoord(XMLoadFloat3(&xmf3CameraOrigin), xmmtxToModel);
+	xmvPickRayDirection = XMVector3TransformCoord(xmvPickPosition, xmmtxToModel);
+
+	xmvPickRayDirection = XMVector3Normalize(xmvPickRayDirection - xmvPickRayOrigin);
 }

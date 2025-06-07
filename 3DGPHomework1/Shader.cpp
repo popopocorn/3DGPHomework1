@@ -289,3 +289,15 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 		m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 	}
 }
+
+D3D12_SHADER_BYTECODE UIShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"UIShaders.hlsl", "VSDiffused", "vs_5_1",
+		ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE UIShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"UIShaders.hlsl", "PSDiffused", "ps_5_1",
+		ppd3dShaderBlob));
+}

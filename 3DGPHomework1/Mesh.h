@@ -122,3 +122,10 @@ public:
 		* pd3dCommandList, XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f));
 	virtual ~CartModel();
 };
+
+class UIModel :public CMesh {
+public:
+	UIModel(const char* UIName,ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f));
+	virtual ~UIModel();
+};

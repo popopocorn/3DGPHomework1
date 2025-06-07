@@ -72,7 +72,9 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	std::vector<CGameObject*> m_ppObjects;
 	int m_nObjects = 0;
-protected:
-	
-	
+};
+
+class UIShader : public CObjectsShader {
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
 };

@@ -42,7 +42,9 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 		case VK_CONTROL:
 			dynamic_cast<CTankPlayer*>(m_pPlayer)->fireBullet(m_pLockedObject);
 			break;
-
+		case 'W':
+			EnemyCnt = 0;
+			break;
 		default:
 			break;
 		}
@@ -115,9 +117,13 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
-	m_nShaders = 1;
-	m_pShaders = new CObjectsShader[m_nShaders];
-	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	
+	CObjectsShader* newshader = new CObjectsShader;
+	newshader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pShaders.push_back(newshader);
+
+
+
 	
 	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
 		5000.0f, 5.0f, 5000.0f);
@@ -125,39 +131,50 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	Plane->SetMesh(pCubeMesh);
 	Plane->SetPosition(0, -7, 0);
 	Plane->debugName = 'p';
-	m_pShaders[0].m_ppObjects.push_back(Plane);
+	m_pShaders[0]->m_ppObjects.push_back(Plane);
 	
 
 	CMesh* SmallCubeMesh = new EnemyMesh(pd3dDevice, pd3dCommandList);
 	
-	CGameObject* e1 = new Enemy();
-	e1->SetMesh(SmallCubeMesh);
-	e1->SetPosition(-20, 0, 0);
-	e1->debugName = '1';
-	m_pShaders[0].m_ppObjects.push_back(e1);
+	std::array<CGameObject*, 10> enemies;
+	for (int i = 0; i < enemies.size(); ++i) {
+		enemies[i] = new Enemy();;
+		enemies[i]->SetMesh(SmallCubeMesh);
+		enemies[i]->SetPosition(RANDOM_COLOR.x * 1000 - 500, 0, RANDOM_COLOR.z * 1000 - 500);
+		
+		enemies[i]->debugName = i;
+		m_pShaders[0]->m_ppObjects.push_back(enemies[i]);
+	}
 
-	CGameObject* e2 = new Enemy();
-	e2->SetMesh(SmallCubeMesh);
-	e2->SetPosition(20, 0, 0);
-	e2->debugName = '2';
-	m_pShaders[0].m_ppObjects.push_back(e2);
 
 	CTankPlayer* pPlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
 	m_pPlayer = pPlayer;
 
+
+	CObjectsShader* newUIshader = new UIShader;
+	newUIshader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pShaders.push_back(newUIshader);
+
+	UIModel* UIMesh = new UIModel("youwin.obj", pd3dDevice, pd3dCommandList);
+	YouWin = new UIObject();
+	YouWin->SetMesh(UIMesh);
+	YouWin->SetPosition(0.0, 0.0, 0.5);
+	dynamic_cast<UIObject*>(YouWin)->rotateSpeed = 0;
+
+	
 }
 
 
 void CScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
-	for (int i = 0; i < m_nShaders; i++)
+	for (int i = 0; i < m_pShaders.size(); i++)
 	{
-		m_pShaders[i].ReleaseShaderVariables();
-		m_pShaders[i].ReleaseObjects();
+		m_pShaders[i]->ReleaseShaderVariables();
+		m_pShaders[i]->ReleaseObjects();
 	}
-	if (m_pShaders) delete[] m_pShaders;
+	if (! m_pShaders.empty()) m_pShaders.clear();
 	if (m_pPlayer) delete m_pPlayer;
 }
 
@@ -168,10 +185,10 @@ bool CScene::ProcessInput(UCHAR* pKeysBuffer) {
 void CScene::AnimateObjects(float fTimeElapsed)
 {
 	
-	for (int i = 0; i < m_nShaders; i++)
+	for (int i = 0; i < m_pShaders.size(); i++)
 	{
 		
-		m_pShaders[i].AnimateObjects(fTimeElapsed);
+		m_pShaders[i]->AnimateObjects(fTimeElapsed);
 	}
 	m_pPlayer->Animate(fTimeElapsed);
 
@@ -182,15 +199,15 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
-	for (int i = 0; i < m_nShaders; i++)
+	for (int i = 0; i < m_pShaders.size(); i++)
 	{
-		m_pShaders[i].Render(pd3dCommandList, pCamera);
+		m_pShaders[i]->Render(pd3dCommandList, pCamera);
 	}
 }
 
 void CScene::ReleaseUploadBuffers()
 {
-	for (int i = 0; i < m_nShaders; i++) m_pShaders[i].ReleaseUploadBuffers();
+	for (int i = 0; i < m_pShaders.size(); i++) m_pShaders[i]->ReleaseUploadBuffers();
 }
 
 ID3D12RootSignature* CScene::GetGraphicsRootSignature()
@@ -208,23 +225,24 @@ void CScene::CheckCollisions()
 	}else
 		return;
 
-	for (int i = 0; i < m_pShaders[0].m_ppObjects.size(); ++i) {
+	for (int i = 0; i < m_pShaders[0]->m_ppObjects.size(); ++i) {
 		for(int j=0; j< temp->m_ppBullets.size(); ++j){
-			if (GroundObject* gr = dynamic_cast<GroundObject*>(m_pShaders[0].m_ppObjects[i]))
+			if (GroundObject* gr = dynamic_cast<GroundObject*>(m_pShaders[0]->m_ppObjects[i]))
 				continue;
-			if (CExplosiveObject* ex = dynamic_cast<CExplosiveObject*>(m_pShaders[0].m_ppObjects[i]))
+			if (CExplosiveObject* ex = dynamic_cast<CExplosiveObject*>(m_pShaders[0]->m_ppObjects[i]))
 				continue;
-			if (m_pShaders[0].m_ppObjects[i]->getOOBB().Intersects(temp->m_ppBullets[j]->getOOBB())) {
-				m_pShaders[0].m_ppObjects[i]->DoCollision();
+			if (m_pShaders[0]->m_ppObjects[i]->getOOBB().Intersects(temp->m_ppBullets[j]->getOOBB())) {
+				m_pShaders[0]->m_ppObjects[i]->DoCollision();
 				temp->m_ppBullets[j]->DoCollision();
-				
+				--EnemyCnt;
+				m_pLockedObject = NULL;
 				collieded = true;
-				XMFLOAT3 a = m_pShaders[0].m_ppObjects[i]->GetPosition();
+				XMFLOAT3 a = m_pShaders[0]->m_ppObjects[i]->GetPosition();
 				CGameObject* explosion = new CExplosiveObject();
 				explosion->SetPosition(a);
 				explosion->SetMesh(temp->m_ppBullets[j]->getMesh());
 				dynamic_cast<CExplosiveObject*>(explosion)->PrepareExplosion();
-				m_pShaders[0].m_ppObjects.push_back(explosion);
+				m_pShaders[0]->m_ppObjects.push_back(explosion);
 				break;
 			}
 		}
@@ -238,8 +256,8 @@ void CScene::CheckCollisions()
 
 void CScene::CheckDelete()
 {
-	m_pShaders[0].m_ppObjects.erase(
-		std::remove_if(m_pShaders[0].m_ppObjects.begin(), m_pShaders[0].m_ppObjects.end(),
+	m_pShaders[0]->m_ppObjects.erase(
+		std::remove_if(m_pShaders[0]->m_ppObjects.begin(), m_pShaders[0]->m_ppObjects.end(),
 			[](CGameObject* e) {
 				if (dynamic_cast<Enemy*>(e))
 					return dynamic_cast<Enemy*>(e)->isAlive();
@@ -248,8 +266,11 @@ void CScene::CheckDelete()
 				else
 					return false;
 
-			}), m_pShaders[0].m_ppObjects.end()
+			}), m_pShaders[0]->m_ppObjects.end()
 				);
+	if (EnemyCnt == 0) {
+		m_pShaders[1]->m_ppObjects.push_back(YouWin);
+	}
 }
 
 
@@ -302,28 +323,26 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 	xmf3PickPosition.y = -(((2.0f * yClient) / (float)pCamera->GetViewport().Height) - 1) / pCamera->GetProjectionMatrix()._22;
 	xmf3PickPosition.z = 1.0f;
 
-
-
 	XMVECTOR xmvPickPosition = XMLoadFloat3(&xmf3PickPosition);
 	XMMATRIX xmmtxView = XMLoadFloat4x4(&pCamera->GetViewMatrix());
 
 	int nIntersected = 0;
 	float fNearestHitDistance = FLT_MAX;
 	CGameObject* pNearestObject = NULL;
-	for (int i = 0; i < m_nShaders; i++)
+	for (int i = 0; i < m_pShaders.size(); i++)
 	{
 		
-		for (int j = 0; j < m_pShaders[i].m_ppObjects.size();++j) {
+		for (int j = 0; j < m_pShaders[i]->m_ppObjects.size();++j) {
 			float fHitDistance = FLT_MAX;
 			
-			nIntersected = (m_pShaders[i].m_ppObjects[j])->PickObjectByRayIntersection(xmvPickPosition, xmmtxView, fHitDistance);
+			nIntersected = (m_pShaders[i]->m_ppObjects[j])->PickObjectByRayIntersection(xmvPickPosition, xmmtxView, fHitDistance);
 			/*char buffer[64];
 			sprintf(buffer, "dist: %f", fNearestHitDistance);
 			OutputDebugStringA(buffer);*/
 			if ((nIntersected > 0) && (fHitDistance < fNearestHitDistance))
 			{
 				fNearestHitDistance = fHitDistance;
-				pNearestObject = m_pShaders[i].m_ppObjects[j];
+				pNearestObject = m_pShaders[i]->m_ppObjects[j];
 			}
 		}
 	}
@@ -369,7 +388,10 @@ bool Title::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, 
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 		::GetCursorPos(&m_ptOldCursorPos);
-		m_pFramework->reqeustChangeScene(new Rollercoaster(m_pFramework));
+		//m_pFramework->reqeustChangeScene(new Rollercoaster(m_pFramework));
+		m_pLockedObject = PickObjectPointedByCursor(LOWORD(lParam), HIWORD(lParam), m_pPlayer->GetCamera());
+		if (m_pLockedObject)
+			toTheNext();
 		break;
 	}
 	return false;
@@ -393,20 +415,55 @@ void Title::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
-	m_nShaders = 1;
-	m_pShaders = new CObjectsShader[m_nShaders];
-	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	CObjectsShader* newshader = new CObjectsShader;
+	newshader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pShaders.push_back(newshader);
 
 	CTankPlayer* pPlayer = new CTankPlayer(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
 	pPlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0);
 	m_pPlayer = pPlayer;
 
+	CObjectsShader* newUIshader = new UIShader;
+	newUIshader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pShaders.push_back(newUIshader);
 
+
+	UIModel* UIMesh = new UIModel("NAME.obj", pd3dDevice, pd3dCommandList);
+	CGameObject* Title = new UIObject();
+	Title->SetMesh(UIMesh);
+	Title->SetPosition(0.0, 0.0, 0.5);
+	
+	m_pShaders[1]->m_ppObjects.push_back(Title);
+	CCubeMeshDiffused* pBulletMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 2, 2, 2);
+	explosion = new CExplosiveObject();
+	explosion->SetMesh(pBulletMesh);
+	dynamic_cast<CExplosiveObject*>(explosion)->PrepareExplosion();
 }
 
 void Title::AnimateObjects(float fTimeElapsed)
 {
+	for (int i = 0; i < m_pShaders.size(); i++)
+	{
+
+		m_pShaders[i]->AnimateObjects(fTimeElapsed);
+	}
+	m_pPlayer->Animate(fTimeElapsed);
+	for (int i = 0; i < m_pShaders[0]->m_ppObjects.size(); ++i) {
+		if (dynamic_cast<CExplosiveObject*>(m_pShaders[0]->m_ppObjects[i])) {
+			if (dynamic_cast<CExplosiveObject*>(m_pShaders[0]->m_ppObjects[i])->isAlive())
+				m_pFramework->reqeustChangeScene(new Rollercoaster(m_pFramework));
+		}
+	}
+}
+
+void Title::toTheNext()
+{
+	m_pShaders[1]->m_ppObjects.clear();
+	m_pShaders[0]->m_ppObjects.push_back(explosion);
+	
+	
+	
 }
 
 
@@ -439,10 +496,10 @@ void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
-	m_nShaders = 1;
-	m_pShaders = new CObjectsShader[m_nShaders];
-	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
-
+	CObjectsShader* newshader = new CObjectsShader;
+	newshader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pShaders.push_back(newshader);
+	
 	Cart* pPlayer = new Cart(pd3dDevice,
 		pd3dCommandList, GetGraphicsRootSignature());
 	pPlayer->SetPosition(XMFLOAT3(0, 3, -2));
@@ -454,7 +511,7 @@ void Rollercoaster::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	CGameObject* r1 = new Rail();
 	r1->SetMesh(railObject);
 	r1->SetPosition(0, 0, 0);
-	m_pShaders[0].m_ppObjects.push_back(r1);
+	m_pShaders[0]->m_ppObjects.push_back(r1);
 	
 
 }
