@@ -350,24 +350,24 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 		if (GroundObject* ground = dynamic_cast<GroundObject*>(pNearestObject))
 		{
 			pNearestObject = NULL;
-			OutputDebugString(L"None\n");
+			//OutputDebugString(L"None\n");
 			
 		}else
 
 		{
-			wchar_t buffer[100];
-			std::wstring debugStr = L"OBB Bounding Box Info:\n";
+			//wchar_t buffer[100];
+			//std::wstring debugStr = L"OBB Bounding Box Info:\n";
 
-			// char → wchar_t 직접 변환
-			swprintf_s(buffer, 100, L"pNearestObject 이름: %c\n", (wchar_t)pNearestObject->debugName);
+			//// char → wchar_t 직접 변환
+			//swprintf_s(buffer, 100, L"pNearestObject 이름: %c\n", (wchar_t)pNearestObject->debugName);
 
-			debugStr += buffer;
+			//debugStr += buffer;
 
-			OutputDebugStringW(debugStr.c_str());
+			//OutputDebugStringW(debugStr.c_str());
 		}
 	}
 	else {
-		OutputDebugString(L"None\n");
+		//OutputDebugString(L"None\n");
 	}
 
 

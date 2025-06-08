@@ -61,6 +61,7 @@ private:
 	CGameObject* explosion;
 };
 
+
 class Rollercoaster : public CScene {
 public:
 	Rollercoaster(CGameFramework* framework) : CScene(framework) { m_pFramework = framework; };

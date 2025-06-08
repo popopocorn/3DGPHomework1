@@ -358,9 +358,9 @@ void CTankPlayer::fireBullet(CGameObject* pickedObj)
 	firedBullet = new CBulletObject(150);
 	if (pBulletMesh)
 		firedBullet->SetMesh(pBulletMesh);
-	else
-		OutputDebugString(L"ÃÑ¾Ë¾øÀ½\n");
-
+	else {
+		//OutputDebugString(L"ÃÑ¾Ë¾øÀ½\n");
+	}
 	XMFLOAT3 temp = Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetRight(), 1.5f, false));
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetUp(), 7.5f, false));
 	temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), 13.0f, false));

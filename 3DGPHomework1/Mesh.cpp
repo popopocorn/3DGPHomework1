@@ -63,7 +63,7 @@ void CMesh::setOOBB() {
 	std::vector<CDiffusedVertex> temp = vertices;
 
 	if (temp.empty()) {
-		OutputDebugString(L"메쉬ㅇㄷ?\n");
+		//OutputDebugString(L"메쉬ㅇㄷ?\n");
 		return;
 	}
 
